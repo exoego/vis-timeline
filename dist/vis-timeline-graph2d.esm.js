@@ -5,7 +5,7 @@
  * Create a fully customizable, interactive timeline with items and ranges.
  *
  * @version 0.0.0-no-version
- * @date    2019-09-18T04:30:24Z
+ * @date    2019-09-18T04:35:45Z
  *
  * @copyright (c) 2011-2017 Almende B.V, http://almende.com
  * @copyright (c) 2018-2019 visjs contributors, https://github.com/visjs
@@ -30198,18 +30198,18 @@ function () {
           deleteButton.className = 'vis-delete';
         }
 
-        var locale = this.options.locales[this.options.locale];
+        var _locales = this.options.locales[this.options.locale];
 
-        if (!locale) {
+        if (!_locales) {
           if (!this.warned) {
             console.warn("WARNING: options.locales['".concat(this.options.locale, "'] not found. See https://visjs.github.io/vis-timeline/docs/timeline/#Localization"));
             this.warned = true;
           }
 
-          locale = this.options.locales['en']; // fall back on english when not available
+          _locales = this.options.locales['en']; // fall back on english when not available
         }
 
-        deleteButton.title = locale.deleteSelected; // TODO: be able to destroy the delete button
+        deleteButton.title = _locales.deleteSelected; // TODO: be able to destroy the delete button
 
         this.hammerDeleteButton = new Hammer(deleteButton).on('tap', function (event) {
           event.stopPropagation();
