@@ -5,7 +5,7 @@
  * Create a fully customizable, interactive timeline with items and ranges.
  *
  * @version 0.0.0-no-version
- * @date    2019-08-31T18:14:12Z
+ * @date    2019-09-18T04:22:23Z
  *
  * @copyright (c) 2011-2017 Almende B.V, http://almende.com
  * @copyright (c) 2018-2019 visjs contributors, https://github.com/visjs
@@ -23671,6 +23671,8 @@ function () {
 
       if (this.step != 1) {
         // round down to the first minor value that is a multiple of the current step size
+        var priorCurrent = this.current.clone();
+
         switch (this.scale) {
           case 'millisecond':
             this.current.subtract(this.current.milliseconds() % this.step, 'milliseconds');
@@ -23708,6 +23710,10 @@ function () {
 
           default:
             break;
+        }
+
+        if (!priorCurrent.isSame(this.current)) {
+          this.current = moment$3(snapAwayFromHidden(this.hiddenDates, this.current.valueOf(), -1, true));
         }
       }
     }
@@ -26209,38 +26215,131 @@ var ru = createCommonjsModule$2(function (module, exports) {
   });
 });
 
+var ja = createCommonjsModule$2(function (module, exports) {
+
+  (function (global, factory) {
+     typeof commonjsRequire$2 === 'function' ? factory(moment$2) :  factory(global.moment);
+  })(commonjsGlobal$2, function (moment) {
+
+    var ja = moment.defineLocale('ja', {
+      months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
+      monthsShort: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+      weekdays: '日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日'.split('_'),
+      weekdaysShort: '日_月_火_水_木_金_土'.split('_'),
+      weekdaysMin: '日_月_火_水_木_金_土'.split('_'),
+      longDateFormat: {
+        LT: 'HH:mm',
+        LTS: 'HH:mm:ss',
+        L: 'YYYY/MM/DD',
+        LL: 'YYYY年M月D日',
+        LLL: 'YYYY年M月D日 HH:mm',
+        LLLL: 'YYYY年M月D日 dddd HH:mm',
+        l: 'YYYY/MM/DD',
+        ll: 'YYYY年M月D日',
+        lll: 'YYYY年M月D日 HH:mm',
+        llll: 'YYYY年M月D日(ddd) HH:mm'
+      },
+      meridiemParse: /午前|午後/i,
+      isPM: function (input) {
+        return input === '午後';
+      },
+      meridiem: function (hour, minute, isLower) {
+        if (hour < 12) {
+          return '午前';
+        } else {
+          return '午後';
+        }
+      },
+      calendar: {
+        sameDay: '[今日] LT',
+        nextDay: '[明日] LT',
+        nextWeek: function (now) {
+          if (now.week() < this.week()) {
+            return '[来週]dddd LT';
+          } else {
+            return 'dddd LT';
+          }
+        },
+        lastDay: '[昨日] LT',
+        lastWeek: function (now) {
+          if (this.week() < now.week()) {
+            return '[先週]dddd LT';
+          } else {
+            return 'dddd LT';
+          }
+        },
+        sameElse: 'L'
+      },
+      dayOfMonthOrdinalParse: /\d{1,2}日/,
+      ordinal: function (number, period) {
+        switch (period) {
+          case 'd':
+          case 'D':
+          case 'DDD':
+            return number + '日';
+
+          default:
+            return number;
+        }
+      },
+      relativeTime: {
+        future: '%s後',
+        past: '%s前',
+        s: '数秒',
+        ss: '%d秒',
+        m: '1分',
+        mm: '%d分',
+        h: '1時間',
+        hh: '%d時間',
+        d: '1日',
+        dd: '%d日',
+        M: '1ヶ月',
+        MM: '%dヶ月',
+        y: '1年',
+        yy: '%d年'
+      }
+    });
+    return ja;
+  });
+});
+
 var locales = createCommonjsModule$2(function (module, exports) {
   // English
   exports['en'] = {
     current: 'current',
-    time: 'time'
+    time: 'time',
+    deleteSelected: 'Delete selected'
   };
   exports['en_EN'] = exports['en'];
   exports['en_US'] = exports['en']; // Italiano
 
   exports['it'] = {
     current: 'attuale',
-    time: 'tempo'
+    time: 'tempo',
+    deleteSelected: 'Cancella la selezione'
   };
   exports['it_IT'] = exports['it'];
   exports['it_CH'] = exports['it']; // Dutch
 
   exports['nl'] = {
     current: 'huidige',
-    time: 'tijd'
+    time: 'tijd',
+    deleteSelected: 'Selectie verwijderen'
   };
   exports['nl_NL'] = exports['nl'];
   exports['nl_BE'] = exports['nl']; // German
 
   exports['de'] = {
     current: 'Aktuelle',
-    time: 'Zeit'
+    time: 'Zeit',
+    deleteSelected: "L\xF6sche Auswahl"
   };
   exports['de_DE'] = exports['de']; // French
 
   exports['fr'] = {
     current: 'actuel',
-    time: 'heure'
+    time: 'heure',
+    deleteSelected: 'Effacer la selection'
   };
   exports['fr_FR'] = exports['fr'];
   exports['fr_CA'] = exports['fr'];
@@ -26248,21 +26347,31 @@ var locales = createCommonjsModule$2(function (module, exports) {
 
   exports['es'] = {
     current: 'corriente',
-    time: 'hora'
+    time: 'hora',
+    deleteSelected: "Eliminar selecci\xF3n"
   };
   exports['es_ES'] = exports['es']; // Ukrainian
 
   exports['uk'] = {
     current: 'поточний',
-    time: 'час'
+    time: 'час',
+    deleteSelected: 'Видалити обране'
   };
   exports['uk_UA'] = exports['uk']; // Russian
 
   exports['ru'] = {
     current: 'текущее',
-    time: 'время'
+    time: 'время',
+    deleteSelected: 'Удалить выбранное'
   };
-  exports['ru_RU'] = exports['ru'];
+  exports['ru_RU'] = exports['ru']; // Japanese
+
+  exports['ja'] = {
+    current: '現在',
+    time: '時刻',
+    deleteSelected: '選択されたものを削除'
+  };
+  exports['ja_JP'] = exports['ja'];
 });
 
 /** A custom time bar */
@@ -26469,6 +26578,20 @@ function (_Component) {
     key: "getCustomTime",
     value: function getCustomTime() {
       return new Date(this.customTime.valueOf());
+    }
+    /**
+     * Set custom marker.
+     * @param {string} title
+     */
+
+  }, {
+    key: "setCustomMarker",
+    value: function setCustomMarker(title) {
+      var marker = document.createElement('div');
+      marker.className = "vis-custom-time-marker";
+      marker.innerHTML = title;
+      marker.style.position = 'absolute';
+      this.bar.appendChild(marker);
     }
     /**
       * Set custom title.
@@ -27170,6 +27293,27 @@ function () {
       }
 
       return customTimes[0].getCustomTime();
+    }
+    /**
+     * Set a custom marker for the custom time bar.
+     * @param {string} [title] Title of the custom marker.
+     * @param {number} [id=undefined] Id of the custom time bar.
+     */
+
+  }, {
+    key: "setCustomTimeMarker",
+    value: function setCustomTimeMarker(title, id) {
+      var customTimes = this.customTimes.filter(function (component) {
+        return component.options.id === id;
+      });
+
+      if (customTimes.length === 0) {
+        throw new Error("No custom time bar found with id ".concat(JSON.stringify(id)));
+      }
+
+      if (customTimes.length > 0) {
+        customTimes[0].setCustomMarker(title);
+      }
     }
     /**
      * Set a custom title for the custom time bar.
@@ -28573,6 +28717,7 @@ function () {
     this.subgroups = {};
     this.subgroupStack = {};
     this.subgroupStackAll = false;
+    this.subgroupVisibility = {};
     this.doInnerStack = false;
     this.shouldBailStackItems = false;
     this.subgroupIndex = 0;
@@ -28692,6 +28837,12 @@ function () {
 
       var content;
       var templateFunction;
+
+      if (data && data.subgroupVisibility) {
+        for (var key in data.subgroupVisibility) {
+          this.subgroupVisibility[key] = data.subgroupVisibility[key];
+        }
+      }
 
       if (this.itemSet.options && this.itemSet.options.groupTemplate) {
         templateFunction = this.itemSet.options.groupTemplate.bind(this);
@@ -28993,6 +29144,12 @@ function () {
 
         for (var i = 0; i < this.visibleItems.length; i++) {
           this.visibleItems[i].repositionX();
+
+          if (this.subgroupVisibility[this.visibleItems[i].data.subgroup] !== undefined) {
+            if (!this.subgroupVisibility[this.visibleItems[i].data.subgroup]) {
+              this.visibleItems[i].hide();
+            }
+          }
         }
 
         if (this.itemSet.options.cluster) {
@@ -29104,13 +29261,15 @@ function () {
   }, {
     key: "_updateSubGroupHeights",
     value: function _updateSubGroupHeights(margin) {
+      var _this3 = this;
+
       if (Object.keys(this.subgroups).length > 0) {
         var me = this;
         this.resetSubgroups();
         util.forEach(this.visibleItems, function (item) {
           if (item.data.subgroup !== undefined) {
             me.subgroups[item.data.subgroup].height = Math.max(me.subgroups[item.data.subgroup].height, item.height + margin.item.vertical);
-            me.subgroups[item.data.subgroup].visible = true;
+            me.subgroups[item.data.subgroup].visible = typeof _this3.subgroupVisibility[item.data.subgroup] === 'undefined' ? true : Boolean(_this3.subgroupVisibility[item.data.subgroup]);
           }
         });
       }
@@ -29789,16 +29948,23 @@ function () {
     this.data = data;
     this.dom = null;
     this.conversion = conversion || {};
-    this.options = options || {};
+    this.defaultOptions = {
+      locales: locales,
+      locale: 'en'
+    };
+    this.options = util.extend({}, this.defaultOptions, options);
     this.selected = false;
     this.displayed = false;
     this.groupShowing = true;
+    console.log(options);
+    this.selectable = options && options.selectable || false;
     this.dirty = true;
     this.top = null;
     this.right = null;
     this.left = null;
     this.width = null;
     this.height = null;
+    this.setSelectability(data);
     this.editable = null;
 
     this._updateEditStatus();
@@ -29811,9 +29977,11 @@ function () {
   _createClass$1(Item, [{
     key: "select",
     value: function select() {
-      this.selected = true;
-      this.dirty = true;
-      if (this.displayed) this.redraw();
+      if (this.selectable) {
+        this.selected = true;
+        this.dirty = true;
+        if (this.displayed) this.redraw();
+      }
     }
     /**
      * Unselect current item
@@ -29841,6 +30009,8 @@ function () {
         this.parent.itemSet._moveToGroup(this, data.group);
       }
 
+      this.setSelectability(data);
+
       if (this.parent) {
         this.parent.stackDirty = true;
       }
@@ -29857,6 +30027,19 @@ function () {
 
       this.dirty = true;
       if (this.displayed) this.redraw();
+    }
+    /**
+     * Set whether the item can be selected.
+     * Can only be set/unset if the timeline's `selectable` configuration option is `true`.
+     * @param {Object} data `data` from `constructor` and `setData`
+     */
+
+  }, {
+    key: "setSelectability",
+    value: function setSelectability(data) {
+      if (data) {
+        this.selectable = typeof data.selectable === 'undefined' ? true : Boolean(data.selectable);
+      }
     }
     /**
      * Set a parent for the item
@@ -30015,7 +30198,18 @@ function () {
           deleteButton.className = 'vis-delete';
         }
 
-        deleteButton.title = 'Delete this item'; // TODO: be able to destroy the delete button
+        var locale = this.options.locales[this.options.locale];
+
+        if (!locale) {
+          if (!this.warned) {
+            console.warn("WARNING: options.locales['".concat(this.options.locale, "'] not found. See https://visjs.github.io/vis-timeline/docs/timeline/#Localization"));
+            this.warned = true;
+          }
+
+          locale = this.options.locales['en']; // fall back on english when not available
+        }
+
+        deleteButton.title = locale.deleteSelected; // TODO: be able to destroy the delete button
 
         this.hammerDeleteButton = new Hammer(deleteButton).on('tap', function (event) {
           event.stopPropagation();
@@ -32983,7 +33177,8 @@ function (_Component) {
 
     _this.itemsSettingTime = null;
     _this.initialItemSetDrawn = false;
-    _this.userContinueNotBail = null; // listeners for the DataSet of the items
+    _this.userContinueNotBail = null;
+    _this.sequentialSelection = false; // listeners for the DataSet of the items
 
     _this.itemListeners = {
       'add': function add(event, params, senderId) {
@@ -33249,7 +33444,7 @@ function (_Component) {
 
       if (options) {
         // copy all options that we know
-        var fields = ['type', 'rtl', 'align', 'order', 'stack', 'stackSubgroups', 'selectable', 'multiselect', 'multiselectPerGroup', 'groupOrder', 'dataAttributes', 'template', 'groupTemplate', 'visibleFrameTemplate', 'hide', 'snap', 'groupOrderSwap', 'showTooltips', 'tooltip', 'tooltipOnItemUpdateTime', 'groupHeightMode', 'onTimeout'];
+        var fields = ['type', 'rtl', 'align', 'order', 'stack', 'stackSubgroups', 'selectable', 'multiselect', 'sequentialSelection', 'multiselectPerGroup', 'groupOrder', 'dataAttributes', 'template', 'groupTemplate', 'visibleFrameTemplate', 'hide', 'snap', 'groupOrderSwap', 'showTooltips', 'tooltip', 'tooltipOnItemUpdateTime', 'groupHeightMode', 'onTimeout'];
         util.selectiveExtend(fields, this.options, options);
 
         if ('itemsAlwaysDraggable' in options) {
@@ -33262,6 +33457,12 @@ function (_Component) {
             if (!this.options.itemsAlwaysDraggable.item) {
               this.options.itemsAlwaysDraggable.range = false;
             }
+          }
+        }
+
+        if ('sequentialSelection' in options) {
+          if (typeof options.sequentialSelection === 'boolean') {
+            this.options.sequentialSelection = options.sequentialSelection;
           }
         }
 
@@ -33291,6 +33492,12 @@ function (_Component) {
             }
           }
         }
+
+        ['locale', 'locales'].forEach(function (key) {
+          if (key in options) {
+            _this3.options[key] = options[key];
+          }
+        });
 
         if ('editable' in options) {
           if (typeof options.editable === 'boolean') {
@@ -35139,7 +35346,7 @@ function (_Component) {
 
       var oldSelection = this.getSelection();
       var item = this.itemFromTarget(event);
-      var selection = item ? [item.id] : [];
+      var selection = item && item.selectable ? [item.id] : [];
       this.setSelection(selection);
       var newSelection = this.getSelection(); // emit a select event,
       // except when old selection is empty and new selection is still empty
@@ -35378,6 +35585,8 @@ function (_Component) {
   }, {
     key: "_onMultiSelectItem",
     value: function _onMultiSelectItem(event) {
+      var _this11 = this;
+
       if (!this.options.selectable) return;
       var item = this.itemFromTarget(event);
 
@@ -35388,7 +35597,7 @@ function (_Component) {
 
         var shiftKey = event.srcEvent && event.srcEvent.shiftKey || false;
 
-        if (shiftKey && this.options.multiselect) {
+        if ((shiftKey || this.options.sequentialSelection) && this.options.multiselect) {
           // select all items between the old selection and the tapped item
           var itemGroup = this.itemsData.get(item.id).group; // when filtering get the group of the last selected item
 
@@ -35436,7 +35645,10 @@ function (_Component) {
           }
         }
 
-        this.setSelection(selection);
+        var filteredSelection = selection.filter(function (item) {
+          return _this11.getItemById(item).selectable;
+        });
+        this.setSelection(filteredSelection);
         this.body.emitter.emit('select', {
           items: this.getSelection(),
           event: event
@@ -36545,6 +36757,9 @@ var allOptions$1 = {
     }
   },
   selectable: {
+    'boolean': bool
+  },
+  sequentialSelection: {
     'boolean': bool
   },
   showCurrentTime: {
